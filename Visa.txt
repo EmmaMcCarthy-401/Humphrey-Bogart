@@ -1,0 +1,349 @@
+    DADF PRACTICAL – COMMANDS QUICK REFERENCE
+    =========================================
+
+    1. WINDOWS TERMINAL / COMMAND PROMPT
+    ------------------------------------
+    cd <folder>                 Change to a directory
+    cd ..                       Move to parent directory
+    dir                         List files and folders
+    mkdir <folder>              Create a folder
+    cls                         Clear the terminal
+    type <filename>             Display a text file
+    del <filename>              Delete a file
+    rmdir <folder>              Remove an empty folder
+    node -v                     Check Node.js version
+    npm -v                      Check npm version
+
+    Example project setup:
+    mkdir DADF_Practical
+    cd DADF_Practical
+    mkdir mongodb node express websocket
+
+    2. NODE.JS PROJECT AND NPM COMMANDS
+    ----------------------------------
+    npm init -y                 Create package.json with default settings
+    npm install                 Install dependencies listed in package.json
+    npm install express         Install Express.js
+    npm install ejs             Install EJS template engine
+    npm install ws              Install WebSocket package
+    npm install express ejs ws  Install all three packages together
+    npm list                    List installed packages
+    npm list --depth=0          List top-level installed packages
+    npm uninstall <package>     Remove a package
+    node app.js                 Run app.js
+    node server.js              Run server.js
+    Ctrl + C                    Stop a running Node.js server
+
+    Typical Express setup:
+    mkdir express-practical
+    cd express-practical
+    npm init -y
+    npm install express
+    node app.js
+
+    EJS setup:
+    npm install ejs
+
+    WebSocket setup:
+    npm install ws
+
+    3. MONGODB SHELL (mongosh) COMMANDS
+    ----------------------------------
+    mongosh                     Open MongoDB Shell
+    show dbs                    Show databases
+    use CollegeDB               Switch to database; it is created on first write
+    db                          Display the current database
+    show collections            List collections in the current database
+    db.createCollection("Students")
+                                Create a collection
+    db.dropDatabase()           Delete the current database
+    db.Students.drop()          Delete the Students collection
+
+    INSERT:
+    db.Students.insertOne({ studentId: 101, name: "Aarav", course: "MCA", cgpa: 8.5 })
+    db.Students.insertMany([{ name: "Aarav" }, { name: "Diya" }])
+
+    READ:
+    db.Students.find()          Retrieve all matching documents
+    db.Students.findOne()       Retrieve the first matching document
+    db.Students.find({ course: "MCA" })
+                                Filter by exact value
+    db.Students.find({ cgpa: { $gt: 8 } })
+                                Greater than
+    db.Students.find({ cgpa: { $gte: 8 } })
+                                Greater than or equal
+    db.Students.find({ cgpa: { $lt: 8 } })
+                                Less than
+    db.Students.find({ cgpa: { $lte: 8 } })
+                                Less than or equal
+    db.Students.find({ course: { $ne: "BCA" } })
+                                Not equal
+    db.Customers.find({ city: { $in: ["Pune", "Mumbai"] } })
+                                Match any listed value
+    db.Students.find({}, { name: 1, cgpa: 1, _id: 0 })
+                                Projection: include selected fields
+    db.Students.find().sort({ cgpa: 1 })
+                                Sort ascending
+    db.Students.find().sort({ cgpa: -1 })
+                                Sort descending
+    db.Students.find().limit(5)
+                                Return at most five documents
+    db.Students.find().skip(5)
+                                Skip the first five documents
+
+    UPDATE:
+    db.Students.updateOne({ studentId: 101 }, { $set: { city: "Pune" } })
+    db.Students.updateMany({ course: "MCA" }, { $set: { semester: 3 } })
+    db.Students.updateOne({ studentId: 101 }, { $inc: { cgpa: 1 } })
+    db.Products.updateMany({ category: "Electronics" }, { $mul: { price: 1.10 } })
+                                Multiply price by 1.10 (increase by 10%)
+
+    DELETE:
+    db.Students.deleteOne({ studentId: 101 })
+    db.Students.deleteMany({ course: "BCA" })
+    db.Products.deleteMany({ stock: 0 })
+
+    ARRAY / NULL / MISSING FIELDS:
+    db.Orders.updateOne({ OrderID: 1 }, { $push: { Items: { name: "Tea", price: 20 } } })
+                                Add an item to an array
+    db.IssueRecords.find({ ReturnDate: null })
+                                Matches null and missing ReturnDate fields
+    db.IssueRecords.find({ ReturnDate: { $exists: false } })
+                                Match documents where the field is missing
+    db.Customers.find({ Phone: { $exists: false } })
+                                Find customers without a Phone field
+
+    AGGREGATION:
+    db.Sales.aggregate([{ $match: { Category: "Electronics" } }])
+                                Filter documents in a pipeline
+    db.Sales.aggregate([{ $group: { _id: "$Category", total: { $sum: 1 } } }])
+                                Group and count documents
+    db.Results.aggregate([{ $group: { _id: "$Subject", averageMarks: { $avg: "$Marks" } } }])
+                                Average marks by subject
+    db.Sales.aggregate([{ $project: { total: { $multiply: ["$Quantity", "$UnitPrice"] } } }])
+                                Calculate a field using multiplication
+    db.Sales.aggregate([
+      { $group: { _id: "$Category", revenue: { $sum: { $multiply: ["$Quantity", "$UnitPrice"] } } } },
+      { $sort: { revenue: -1 } },
+      { $limit: 3 }
+    ])
+                                Group revenue, sort highest first, show top three
+
+    4. EXPRESS.JS / NODE.JS CODE CONSTRUCTS
+    --------------------------------------
+    These are JavaScript statements used inside program files, not terminal commands.
+
+    Create an Express app:
+    const express = require("express");
+    const app = express();
+
+    Start the server:
+    app.listen(3000, () => console.log("Server running on port 3000"));
+
+    GET route:
+    app.get("/students", (req, res) => {
+      res.json(students);
+    });
+
+    POST route:
+    app.post("/students", (req, res) => {
+      res.status(201).json(req.body);
+    });
+
+    PUT route:
+    app.put("/students/:id", (req, res) => {
+      res.json({ id: req.params.id, data: req.body });
+    });
+
+    DELETE route:
+    app.delete("/students/:id", (req, res) => {
+      res.send("Deleted");
+    });
+
+    Read route parameter:
+    req.params.id
+
+    Read query parameter:
+    req.query.department
+
+    Read request body:
+    req.body
+
+    Parse JSON request bodies:
+    app.use(express.json());
+
+    Parse HTML form submissions:
+    app.use(express.urlencoded({ extended: true }));
+
+    Register middleware:
+    app.use((req, res, next) => {
+      console.log(req.method, req.url);
+      next();
+    });
+
+    Send JSON:
+    res.json({ message: "Success" });
+
+    Set HTTP status:
+    res.status(200).json({ message: "OK" });
+
+    Return not found:
+    res.status(404).json({ message: "Not found" });
+
+    Serve static files:
+    app.use(express.static("public"));
+
+    Configure EJS:
+    app.set("view engine", "ejs");
+
+    Render an EJS page:
+    res.render("courses", { courses: courses });
+
+    Forward an error:
+    next(new Error("Something went wrong"));
+
+    Error-handler signature:
+    app.use((err, req, res, next) => {
+      res.status(500).send("Something went wrong");
+    });
+
+    5. NODE.JS CORE MODULES
+    -----------------------
+    CommonJS export:
+    module.exports = { calculateTotal, calculateAverage };
+
+    CommonJS import:
+    const result = require("./result");
+
+    File System import:
+    const fs = require("fs");
+
+    Write a file:
+    fs.writeFile("data.txt", "Initial data", callback);
+
+    Append to a file:
+    fs.appendFile("data.txt", "New data", callback);
+
+    Read a file:
+    fs.readFile("data.txt", "utf8", callback);
+
+    Delete a file:
+    fs.unlink("data.txt", callback);
+
+    HTTP module:
+    const http = require("http");
+
+    Create HTTP server:
+    const server = http.createServer((req, res) => {
+      res.end("Hello");
+    });
+
+    Start HTTP server:
+    server.listen(3000);
+
+    EventEmitter:
+    const EventEmitter = require("events");
+    const eventEmitter = new EventEmitter();
+
+    Register listener:
+    eventEmitter.on("studentRegistration", callback);
+
+    Emit event:
+    eventEmitter.emit("studentRegistration", "Aarav");
+
+    Remove listener:
+    eventEmitter.removeListener("studentRegistration", callback);
+
+    6. WEBSOCKET COMMANDS AND TESTING
+    ---------------------------------
+    Install package:
+    npm install ws
+
+    Run WebSocket server:
+    node server.js
+
+    WebSocket address:
+    ws://localhost:8080
+
+    WebSocket server creation:
+    const WebSocket = require("ws");
+    const server = new WebSocket.Server({ port: 8080 });
+
+    Listen for a client:
+    server.on("connection", (socket) => {});
+
+    Receive a message:
+    socket.on("message", (message) => {});
+
+    Send a message:
+    socket.send("Message received");
+
+    Handle disconnection:
+    socket.on("close", () => {});
+
+    Browser client connection:
+    const socket = new WebSocket("ws://localhost:8080");
+
+    Send from browser:
+    socket.send("Hello server");
+
+    7. URLS TO TEST IN A BROWSER OR POSTMAN
+    ---------------------------------------
+    http://localhost:3000/
+    http://localhost:3000/students
+    http://localhost:3000/students/101
+    http://localhost:3000/courses?department=MCA
+    http://localhost:3000/search?term=lap
+    http://localhost:3000/dashboard
+    http://localhost:3000/home
+    http://localhost:3000/about
+    http://localhost:3000/contact
+    http://localhost:8080                 WebSocket server endpoint (use a WebSocket client)
+
+    8. POSTMAN QUICK REFERENCE
+    --------------------------
+    GET     http://localhost:3000/students
+    POST    http://localhost:3000/students
+    PUT     http://localhost:3000/employees/1
+    DELETE  http://localhost:3000/employees/1
+
+    For POST and PUT with JSON:
+    1. Select Body.
+    2. Select raw.
+    3. Select JSON.
+    4. Enter a JSON object, for example:
+
+    {
+      "id": 3,
+      "name": "Aarav",
+      "course": "MCA"
+    }
+
+    Common HTTP status codes:
+    200  OK
+    201  Created
+    400  Bad Request
+    401  Unauthorized
+    403  Forbidden
+    404  Not Found
+    500  Internal Server Error
+
+    9. IMPORTANT REMINDERS
+    ----------------------
+    MongoDB sort: 1 = ascending, -1 = descending.
+    MongoDB projection: 1 = include, 0 = exclude. _id is included by default.
+    MongoDB $gt = greater than; $gte = greater than or equal.
+    MongoDB $lt = less than; $lte = less than or equal.
+    MongoDB $set = assign a value; $inc = increment; $mul = multiply.
+    MongoDB $push = add an element to an array.
+    MongoDB $group = group documents; $sum = sum; $avg = average.
+    Express req.params = route parameters.
+    Express req.query = query-string parameters.
+    Express req.body = parsed request body.
+    Call next() to pass control to the next middleware.
+    Use express.json() for JSON request bodies.
+    Use express.urlencoded({ extended: true }) for HTML form bodies.
+    Run Node.js programs with node filename.js.
+    Stop a running server with Ctrl + C.
+
+    END OF QUICK REFERENCE
